@@ -124,12 +124,75 @@ fun NewsCard(news: Data, onLike: () -> Unit, modifier: Modifier = Modifier) {
 }
 @Composable
 fun OpenGLScreen() {
-    AndroidView(
-        modifier = Modifier.fillMaxSize(),
-        factory = { context -> GLSurfaceView(context).apply {
-            setEGLContextClientVersion(1)
-            setRenderer(Render(context))
+    var currentPlanetIndex by remember { mutableStateOf(0) }
+    Box(modifier = Modifier.fillMaxSize()) {
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { context ->
+                GLSurfaceView(context).apply {
+                    setEGLContextClientVersion(1)
+                    setRenderer(Render(context) { currentPlanetIndex })
+                }
+            },
+            update = {
+                it.requestRender()
+            }
+        )
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Button(
+                onClick = {
+                    moveLeft(currentPlanetIndex) { newIndex ->
+                        currentPlanetIndex = newIndex
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Gray,
+                    contentColor = Color.White
+                ),
+                modifier = Modifier.width(100.dp)
+            ) {
+                Text("Влево", fontSize = 15.sp)
+            }
+            Button(
+                onClick = { },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Gray,
+                    contentColor = Color.White
+                ),
+                modifier = Modifier.width(145.dp)
+            ) {
+                Text("Информация", fontSize = 15.sp)
+            }
+            Button(
+                onClick = {
+                    moveRight(currentPlanetIndex) { newIndex ->
+                        currentPlanetIndex = newIndex
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Gray,
+                    contentColor = Color.White
+                ),
+                modifier = Modifier.width(100.dp)
+            ) {
+                Text("Вправо", fontSize = 15.sp)
+            }
         }
-        }
-    )
+    }
+}
+
+fun moveRight(currentIndex: Int, updateIndex: (Int) -> Unit) {
+    val planetsCount = 11
+    updateIndex((currentIndex + 1) % planetsCount)
+}
+
+fun moveLeft(currentIndex: Int, updateIndex: (Int) -> Unit) {
+    val planetsCount = 11
+    updateIndex(if (currentIndex - 1 < 0) planetsCount - 1 else currentIndex - 1)
 }

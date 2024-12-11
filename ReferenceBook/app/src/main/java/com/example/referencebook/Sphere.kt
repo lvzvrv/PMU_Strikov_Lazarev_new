@@ -75,6 +75,10 @@ class Sphere(private val context: Context, private val R: Float) {
         return textures[index]
     }
 
+    fun radius() : Float {
+        return R
+    }
+
     fun loadTexture(gl: GL10, resourceId: Int, index: Int) {
         gl.glGenTextures(1, textures, index)
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[index])
