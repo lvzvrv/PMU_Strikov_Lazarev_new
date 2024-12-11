@@ -22,6 +22,7 @@ class Render(context: Context, private val currentPlanetIndexProvider: () -> Int
     private val uranus = Sphere(context, 0.1f)
     private val neptune = Sphere(context, 0.1f)
     private val pluto = Sphere(context, 0.05f)
+    private val blackHole = Sphere(context, 0.1f)
     private val cube = Cube()
 
     private var sunRotationAngle = 0f
@@ -41,6 +42,13 @@ class Render(context: Context, private val currentPlanetIndexProvider: () -> Int
     private var width = 0
     private var height = 0
 
+    private var blackHoleX = 2f
+    private var blackHoleY = 2f
+    private val blackHoleSpeedX = -0.03f
+    private val blackHoleSpeedY = -0.03f
+    private var blackHoleVisible = true
+    private var lastResetTime = System.currentTimeMillis()
+
     private var currentPlanetIndex = 0
     private var planets = listOf(sun, mercury, venus, earth, moon, mars, jupiter, saturn, uranus, neptune, pluto)
 
@@ -59,6 +67,7 @@ class Render(context: Context, private val currentPlanetIndexProvider: () -> Int
         uranus.loadTexture(gl, R.drawable.uranus_texture, 8)
         neptune.loadTexture(gl, R.drawable.neptune_texture, 9)
         pluto.loadTexture(gl, R.drawable.pluto_texture, 10)
+        blackHole.loadTexture(gl, R.drawable.blackhole, 11)
         gl.glEnable(GL10.GL_DEPTH_TEST)
         gl.glEnable(GL10.GL_BLEND)
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA)
@@ -87,6 +96,29 @@ class Render(context: Context, private val currentPlanetIndexProvider: () -> Int
         gl.glBindTexture(GL10.GL_TEXTURE_2D, texturedSquare.getTextureId())
         texturedSquare.draw(gl)
         gl.glPopMatrix()
+
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastResetTime >= 15000) {
+            blackHoleX = 2f
+            blackHoleY = 2f
+            blackHoleVisible = true
+            lastResetTime = currentTime
+        }
+
+        if (blackHoleVisible) {
+            blackHoleX += blackHoleSpeedX
+            blackHoleY += blackHoleSpeedY
+
+            if (blackHoleX <= -2f || blackHoleY <= -2f) {
+                blackHoleVisible = false
+            }
+
+            gl.glPushMatrix()
+            gl.glTranslatef(blackHoleX, blackHoleY, -4.7f)
+            gl.glBindTexture(GL10.GL_TEXTURE_2D, blackHole.getTextureId(11))
+            blackHole.draw(gl)
+            gl.glPopMatrix()
+        }
 
         gl.glPushMatrix()
         gl.glTranslatef(0.0f, 0.0f, -5.0f)
