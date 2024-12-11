@@ -42,6 +42,10 @@ class Square(private val context: Context) {
         textureBuffer.position(0)
     }
 
+    fun getTextureId(): Int {
+        return textures[0]
+    }
+
     fun loadTexture(gl: GL10, resourceId: Int) {
         gl.glGenTextures(1, textures, 0)
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0])
